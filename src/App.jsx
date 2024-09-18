@@ -15,6 +15,10 @@ function App() {
     rsf: true,
   });
 
+const updateQueryTerms = (event) => {
+  setQueryTerms(event.target.value)
+}
+
   const handleSettingChange = (event) => {
     const { name, checked } = event.target;
     setEnabledJournals((prevState) => ({
@@ -55,10 +59,10 @@ function App() {
   const search = async (event, query, issn) => {
     event.preventDefault();
     if (query) {
-      query = query.trim().toLowerCase().replace(/\s+/g, '+');
+      let formattedQuery = query.trim().toLowerCase().replace(/\s+/g, '%20');
       try {
         const response = await fetch(
-          `https://api.crossref.org/journals/${issn}/works?query=${query}&select=DOI,title,author,published,publisher`,
+          `https://api.crossref.org/journals/${issn}/works?query=${formattedQuery}&select=DOI,title,author,published,publisher`,
           {
             headers: {
               "User-Agent":
@@ -148,7 +152,8 @@ function App() {
             <input
               type="text"
               placeholder="I'm looking for an article about..."
-              onChange={(e) => setQueryTerms(e.target.value)}
+              value={queryTerms}
+              onInput={updateQueryTerms}
               className="px-4 py-2 w-1/2 outline-none h-fit input input-primary"
             />
             <button
